@@ -45,15 +45,36 @@ Aristas (Hilos): Conectan dos géneros cuando aparecen juntos en una misma pista
   src="https://observablehq.com/embed/850775f36902796c?cells=viewof+chart"></iframe>
       <section>
         <p class="etiqueta">Lectura generada</p>
-        <p >La red revela un Núcleo de Convergencia dominado por el Pop, el Hip-Hop y el R&B. Estos géneros funcionan como "atractores" en la telaraña, absorbiendo elementos de géneros periféricos como el Country o el Metal. Esta visualización ayuda a entender que en el siglo XXI, la pureza de género ha sido reemplazada por una conectividad fluida, donde los artistas saltan fronteras estilísticas constantemente</p>
+        <p id="lectura" class="lectura">Cargando datos...</p>
       </section>
     </main>
+
     <script src="script.js"></script>
     <script>
-        d3.csv("songs_normalize.csv").then(data => {
-            document.getElementById("total-registros").innerText = data.length;
-            // ... etc
-        });
+        // Todo este código va dentro de script.js
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Cargar el archivo CSV que subiste a GitHub
+    d3.csv("songs_normalize.csv").then(data => {
+       
+        const total = data.length;
+        document.getElementById("total-registros").innerText = total.toLocaleString();
+
+        const promedioPop = d3.mean(data, d => +d.popularity);
+        document.getElementById("valor-total").innerText = Math.round(promedioPop) + "%";
+
+        const conteoGeneros = d3.rollup(data, v => v.length, d => d.genre);
+
+        const mayor = Array.from(conteoGeneros.entries()).reduce((a, b) => a[1] > b[1] ? a : b);
+        
+        document.getElementById("categoria-mayor").innerText = mayor[0];
+        document.getElementById("lectura").innerText = 
+            `El dataset contiene ${total} canciones. El género dominante es ${mayor[0]} con ${mayor[1]} éxitos registrados.`;
+
+    }).catch(error => {
+        console.error("Error cargando el CSV:", error);
+        document.getElementById("lectura").innerText = "No se pudo cargar el archivo songs_normalize.csv";
+    });
     </script>
   </body>
 </html>

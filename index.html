@@ -6,6 +6,24 @@
     <title>Cartografía de la Música</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="style.css">
+</head><meta charset="utf-8">
+    <title>Proyecto</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .conclusion {
+          margin-top: 40px;
+          padding: 20px;
+          background-color: #f9f9f9;
+          border-left: 4px solid #4a90e2;
+          border-radius: 8px;
+          line-height: 1.6;
+        }
+        .texto-conclusion {
+          font-style: italic;
+          color: #333;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -41,34 +59,37 @@
                 src="https://observablehq.com/embed/850775f36902796c?cells=viewof+chart"></iframe>
             </div>
         </section>
-
         <section>
             <p class="etiqueta">Lectura generada</p>
             <p id="lectura" class="lectura">Cargando datos del dataset...</p>
         </section>
+        <section class="conclusion">
+        <p class="etiqueta">Análisis Final</p>
+        <p class="texto-conclusion">
+          La red revela un <strong>Núcleo de Convergencia</strong> dominado por el Pop, el Hip-Hop y el R&B. 
+          Estos géneros funcionan como "atractores" en la telaraña, absorbiendo elementos de géneros periféricos 
+          como el Country o el Metal. Esta visualización ayuda a entender que en el siglo XXI, la pureza de 
+          género ha sido reemplazada por una <strong>conectividad fluida</strong>, donde los artistas saltan 
+          fronteras estilísticas constantemente.
+        </p>
+      </section>
     </main>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Asegúrate de que el CSV esté en la misma carpeta en GitHub
             d3.csv("songs_normalize.csv").then(data => {
                 console.log("Datos cargados:", data.length);
                 
-                // 1. Total de registros
                 document.getElementById("total-registros").innerText = data.length.toLocaleString();
 
-                // 2. Popularidad Media
                 const promedioPop = d3.mean(data, d => +d.popularity);
                 document.getElementById("valor-total").innerText = Math.round(promedioPop) + "%";
 
-                // 3. Género más frecuente
-                // Este dataset a veces tiene "pop, dance". Vamos a limpiar para contar mejor.
                 const conteoGeneros = d3.rollup(data, v => v.length, d => d.genre.split(',')[0]);
                 const mayor = Array.from(conteoGeneros.entries()).reduce((a, b) => a[1] > b[1] ? a : b);
                 
                 document.getElementById("categoria-mayor").innerText = mayor[0];
                 
-                // 4. Texto dinámico
                 document.getElementById("lectura").innerText = 
                     `El dataset analizado contiene ${data.length} pistas. El género con mayor presencia individual es el ${mayor[0]}, con una popularidad promedio general del ${Math.round(promedioPop)}%.`;
 
@@ -77,6 +98,7 @@
                 document.getElementById("lectura").innerText = "Error al cargar el archivo CSV. Verifica que esté en la raíz del repositorio.";
             });
         });
+        
     </script>
 </body>
 </html>

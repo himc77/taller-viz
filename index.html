@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
   <head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Proyecto con datos locales</title>
@@ -44,10 +45,15 @@ Aristas (Hilos): Conectan dos géneros cuando aparecen juntos en una misma pista
   src="https://observablehq.com/embed/850775f36902796c?cells=viewof+chart"></iframe>
       <section>
         <p class="etiqueta">Lectura generada</p>
-        <p id="lectura" class="lectura">Cargando datos...</p>
+        <p >La red revela un Núcleo de Convergencia dominado por el Pop, el Hip-Hop y el R&B. Estos géneros funcionan como "atractores" en la telaraña, absorbiendo elementos de géneros periféricos como el Country o el Metal. Esta visualización ayuda a entender que en el siglo XXI, la pureza de género ha sido reemplazada por una conectividad fluida, donde los artistas saltan fronteras estilísticas constantemente</p>
       </section>
     </main>
-
     <script src="script.js"></script>
+    <script>
+        d3.csv("songs_normalize.csv").then(data => {
+            document.getElementById("total-registros").innerText = data.length;
+            // ... etc
+        });
+    </script>
   </body>
 </html>

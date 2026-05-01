@@ -8,9 +8,9 @@
   </head>
   <body>
     <header>
-      <p class="etiqueta">Datos locales</p>
-      <h1>Comparar categorías desde un archivo de datos</h1>
-      <p class="bajada">Esta plantilla carga un CSV de ejemplo y lo transforma en barras, tarjetas y una lectura breve.</p>
+      <p class="etiqueta">La Red de los Géneros Híbridos</p>
+      <h1>Cartografía de la Música Contemporánea</h1>
+      <p class="bajada">En este análisis visualizamos la hibridación como el motor de la música popular entre 2000 y 2020. En lugar de ver géneros aislados, observamos cómo el dataset songs_normalize.csv revela que la mayoría de los éxitos pertenecen a múltiples categorías simultáneamente.</p>
     </header>
 
     <main>
@@ -31,11 +31,11 @@
 
       <section class="contenedor-viz">
         <div>
-          <p class="etiqueta">Visualización</p>
-          <h2>Valores por categoría</h2>
+          <p class="etiqueta">¿Qué estamos viendo?</p>
+          <h2>Esta telaraña representa la co-ocurrencia técnica:</h2>
           <p>
-            Cambia los datos en <code>datos.csv</code> para adaptar esta plantilla a tu investigación.
-            Cada fila debe tener una categoría, un valor y una nota.
+Nodos (Círculos): Representan géneros puros. El tamaño es proporcional a cuántas canciones contienen ese género.
+Aristas (Hilos): Conectan dos géneros cuando aparecen juntos en una misma pista. El grosor del hilo indica qué tan común es esa mezcla (ej. la conexión Pop-R&B es mucho más gruesa que Rock-Dance).
           </p>
         </div>
         <div id="grafica" class="grafica" aria-live="polite"></div>

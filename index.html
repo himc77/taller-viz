@@ -1,80 +1,82 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Proyecto con datos locales</title>
+    <title>Cartografía de la Música</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
+</head>
+<body>
     <header>
-      <p class="etiqueta">La Red de los Géneros Híbridos</p>
-      <h1>Cartografía de la Música Contemporánea</h1>
-      <p class="bajada">En este análisis visualizamos la hibridación como el motor de la música popular entre 2000 y 2020. En lugar de ver géneros aislados, observamos cómo el dataset songs_normalize.csv revela que la mayoría de los éxitos pertenecen a múltiples categorías simultáneamente.</p>
+        <p class="etiqueta">La Red de los Géneros Híbridos</p>
+        <h1>Cartografía de la Música Contemporánea</h1>
+        <p class="bajada">Análisis de la hibridación musical entre 2000 y 2020 basado en el dataset songs_normalize.csv.</p>
     </header>
 
     <main>
-      <section class="panel-resumen" aria-label="Resumen de datos">
-        <article>
-          <span id="total-registros">0</span>
-          <p>registros</p>
-        </article>
-        <article>
-          <span id="valor-total">0</span>
-          <p>valor total</p>
-        </article>
-        <article>
-          <span id="categoria-mayor">-</span>
-          <p>categoría mayor</p>
-        </article>
-      </section>
+        <section class="panel-resumen">
+            <article>
+                <span id="total-registros">0</span>
+                <p>registros</p>
+            </article>
+            <article>
+                <span id="valor-total">0</span>
+                <p>popularidad media</p>
+            </article>
+            <article>
+                <span id="categoria-mayor">-</span>
+                <p>género principal</p>
+            </article>
+        </section>
 
-      <section class="contenedor-viz">
-        <div>
-          <p class="etiqueta">¿Qué estamos viendo?</p>
-          <h2>Esta telaraña representa la co-ocurrencia técnica:</h2>
-          <p>
-Nodos (Círculos): Representan géneros puros. El tamaño es proporcional a cuántas canciones contienen ese género.
-Aristas (Hilos): Conectan dos géneros cuando aparecen juntos en una misma pista. El grosor del hilo indica qué tan común es esa mezcla (ej. la conexión Pop-R&B es mucho más gruesa que Rock-Dance).
-          </p>
-        </div>
-        <div id="grafica" class="grafica" aria-live="polite"></div>
-      </section>
-<iframe width="100%" height="780" frameborder="0"
-  src="https://observablehq.com/embed/850775f36902796c?cells=viewof+chart"></iframe>
-      <section>
-        <p class="etiqueta">Lectura generada</p>
-        <p id="lectura" class="lectura">Cargando datos...</p>
-      </section>
+        <section class="contenedor-viz">
+            <div>
+                <p class="etiqueta">¿Qué estamos viendo?</p>
+                <h2>Telaraña de co-ocurrencia:</h2>
+                <p>Los hilos conectan géneros que aparecen juntos en la misma canción.</p>
+            </div>
+            <div id="grafica" class="grafica">
+                <iframe width="100%" height="700" frameborder="0"
+                src="https://observablehq.com/embed/850775f36902796c?cells=viewof+chart"></iframe>
+            </div>
+        </section>
+
+        <section>
+            <p class="etiqueta">Lectura generada</p>
+            <p id="lectura" class="lectura">Cargando datos del dataset...</p>
+        </section>
     </main>
 
-    <script src="script.js"></script>
     <script>
-        // Todo este código va dentro de script.js
-document.addEventListener("DOMContentLoaded", () => {
-    
-    // 1. Cargar el archivo CSV que subiste a GitHub
-    d3.csv("songs_normalize.csv").then(data => {
-       
-        const total = data.length;
-        document.getElementById("total-registros").innerText = total.toLocaleString();
+        document.addEventListener("DOMContentLoaded", () => {
+            // Asegúrate de que el CSV esté en la misma carpeta en GitHub
+            d3.csv("songs_normalize.csv").then(data => {
+                console.log("Datos cargados:", data.length);
+                
+                // 1. Total de registros
+                document.getElementById("total-registros").innerText = data.length.toLocaleString();
 
-        const promedioPop = d3.mean(data, d => +d.popularity);
-        document.getElementById("valor-total").innerText = Math.round(promedioPop) + "%";
+                // 2. Popularidad Media
+                const promedioPop = d3.mean(data, d => +d.popularity);
+                document.getElementById("valor-total").innerText = Math.round(promedioPop) + "%";
 
-        const conteoGeneros = d3.rollup(data, v => v.length, d => d.genre);
+                // 3. Género más frecuente
+                // Este dataset a veces tiene "pop, dance". Vamos a limpiar para contar mejor.
+                const conteoGeneros = d3.rollup(data, v => v.length, d => d.genre.split(',')[0]);
+                const mayor = Array.from(conteoGeneros.entries()).reduce((a, b) => a[1] > b[1] ? a : b);
+                
+                document.getElementById("categoria-mayor").innerText = mayor[0];
+                
+                // 4. Texto dinámico
+                document.getElementById("lectura").innerText = 
+                    `El dataset analizado contiene ${data.length} pistas. El género con mayor presencia individual es el ${mayor[0]}, con una popularidad promedio general del ${Math.round(promedioPop)}%.`;
 
-        const mayor = Array.from(conteoGeneros.entries()).reduce((a, b) => a[1] > b[1] ? a : b);
-        
-        document.getElementById("categoria-mayor").innerText = mayor[0];
-        document.getElementById("lectura").innerText = 
-            `El dataset contiene ${total} canciones. El género dominante es ${mayor[0]} con ${mayor[1]} éxitos registrados.`;
-
-    }).catch(error => {
-        console.error("Error cargando el CSV:", error);
-        document.getElementById("lectura").innerText = "No se pudo cargar el archivo songs_normalize.csv";
-    });
+            }).catch(error => {
+                console.error("Error:", error);
+                document.getElementById("lectura").innerText = "Error al cargar el archivo CSV. Verifica que esté en la raíz del repositorio.";
+            });
+        });
     </script>
-  </body>
+</body>
 </html>
